@@ -32,9 +32,7 @@
         <a href="#publicaciones">Publicaciones</a>
         <a href="#rubros">Rubros</a>
         <a href="#publicar">Publicá tu negocio</a>
-        <a class="nav__admin" href="admin/" title="Panel de edición">
-          <svg width="14" height="14" aria-hidden="true"><use href="#i-grid"/></svg> Administrar
-        </a>
+        <a href="#contacto">Contacto</a>
       </nav>
     </div>
   </header>
@@ -81,7 +79,7 @@
       </div>
     </section>
 
-    <section class="wrap cta" id="publicar">
+    <section class="wrap cta" id="contacto">
       <div class="cta__inner">
         <div>
           <h2 id="contact-title">¿Querés publicar tu negocio?</h2>
@@ -92,6 +90,46 @@
         </a>
       </div>
     </section>
+
+    <section class="section submit-section" id="publicar">
+      <div class="wrap">
+        <div class="section__head">
+          <div>
+            <span class="kicker">Sumate al marketplace</span>
+            <h2>Publicá tu negocio</h2>
+            <p>Completá el formulario y se abre WhatsApp con la solicitud lista para enviar. La revisamos y la agregamos a Open Market.</p>
+          </div>
+        </div>
+        <div class="submit-grid">
+          <form class="panel-form" id="submit-form">
+            <div class="field-grid">
+              <div class="field"><label for="s-title">Nombre del negocio *</label><input id="s-title" name="title" required placeholder="Ej: Café de la Sierra"></div>
+              <div class="field"><label for="s-category">Rubro *</label><select id="s-category" name="category" required></select></div>
+              <div class="field"><label for="s-location">Localidad</label><input id="s-location" name="location" placeholder="Ej: Cosquín"></div>
+              <div class="field"><label for="s-phone">Teléfono / WhatsApp *</label><input id="s-phone" name="phone" required placeholder="3541123456"></div>
+              <div class="field field--full"><label for="s-description">Descripción</label><textarea id="s-description" name="description" placeholder="Contanos qué ofrecés, horarios, novedades…"></textarea></div>
+              <div class="field field--full"><label for="s-image">URL de foto (opcional)</label><input id="s-image" name="image" placeholder="https://… o assets/uploads/mi-foto.jpg"><small>Si no tenés una URL, adjuntá la foto directamente en el chat de WhatsApp después de enviar la solicitud.</small></div>
+            </div>
+            <div class="submit-actions">
+              <button class="btn btn--primary" type="submit"><svg width="16" height="16" aria-hidden="true"><use href="#i-wa"/></svg> Enviar solicitud por WhatsApp</button>
+              <button class="btn btn--ghost" type="button" id="copy-submission">Copiar texto</button>
+            </div>
+            <p class="form-status" id="form-status" role="status"></p>
+          </form>
+          <aside class="submit-aside">
+            <div class="submit-aside__icon"><svg width="24" height="24" aria-hidden="true"><use href="#i-spark"/></svg></div>
+            <h3>¿Cómo funciona?</h3>
+            <ol>
+              <li>Completás los datos y tocás <b>Enviar solicitud</b>.</li>
+              <li>Se abre tu WhatsApp con el texto ya listo; solo tenés que enviarlo.</li>
+              <li>Si querés, adjuntás una foto en el mismo chat.</li>
+              <li>Revisamos la solicitud y publicamos tu negocio en Open Market.</li>
+            </ol>
+            <p class="submit-aside__note">Sin costo. Publicamos negocios de todo el Valle de Punilla.</p>
+          </aside>
+        </div>
+      </div>
+    </section>
   </main>
 
   <footer class="site-footer">
@@ -100,7 +138,7 @@
         <a class="brand" href="#top"><span class="brand__mark"><svg viewBox="0 0 64 64" aria-hidden="true"><path d="M8 46 26 16l11 17 7-10 12 23z" fill="#f0ac45"/></svg></span>Open<span>Market</span></a>
         <div id="footer-text" style="margin-top:8px">Hecho con cariño para quienes viven y visitan el Valle de Punilla.</div>
       </div>
-      <div><strong id="footer-region">Valle de Punilla · Córdoba</strong><br><a href="admin/">Panel de administración</a></div>
+      <div><strong id="footer-region">Valle de Punilla · Córdoba</strong><br><span id="footer-tagline">Marketplace local · contacto directo</span></div>
     </div>
   </footer>
 

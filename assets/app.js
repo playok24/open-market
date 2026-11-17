@@ -169,6 +169,73 @@
     $('#grid').innerHTML = list.map(cardHtml).join('');
   }
 
+  function paintSubmissionCategories() {
+    var select = $('#s-category');
+    if (!select) return;
+    var cats = state.config.categories || [];
+    select.innerHTML = cats.map(function (c) {
+      return '<option value="' + esc(c) + '">' + esc(c) + '</option>';
+    }).join('');
+  }
+
+  function submissionMessage(form) {
+    var data = new FormData(form);
+    var get = function (key) { return String(data.get(key) || '').trim(); };
+    var id = 'SOL-' + new Date().toISOString().slice(0, 10).replace(/-/g, '') + '-' + Date.now().toString(36).slice(-4).toUpperCase();
+    return [
+      'SOLICITUD OPEN MARKET · ID: ' + id,
+      'Negocio: ' + get('title'),
+      'Rubro: ' + get('category'),
+      'Localidad: ' + get('location'),
+      'Teléfono: ' + get('phone'),
+      'Descripción: ' + get('description'),
+      'Foto (URL): ' + get('image')
+    ].join('\n');
+  }
+
+  function formMessage(text, isError) {
+    var el = $('#form-status');
+    if (!el) return;
+    el.textContent = text;
+    el.classList.toggle('err', !!isError);
+  }
+
+  function initSubmission() {
+    var form = $('#submit-form');
+    if (!form) return;
+
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      if (!form.reportValidity()) return;
+      var message = submissionMessage(form);
+      formMessage('Abrimos WhatsApp con tu solicitud. Revisá el mensaje y enviálo.');
+      window.open(contactWa(message), '_blank', 'noopener');
+    });
+
+    $('#copy-submission').addEventListener('click', function () {
+      if (!form.reportValidity()) return;
+      var message = submissionMessage(form);
+      var done = function () { formMessage('Texto copiado. Pegalo en el chat de WhatsApp del organizador.'); };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(message).then(done).catch(function () { fallbackCopy(message, done); });
+      } else {
+        fallbackCopy(message, done);
+      }
+    });
+  }
+
+  function fallbackCopy(text, done) {
+    var area = document.createElement('textarea');
+    area.value = text;
+    area.style.position = 'fixed';
+    area.style.opacity = '0';
+    document.body.appendChild(area);
+    area.select();
+    try { document.execCommand('copy'); done(); }
+    catch (e) { formMessage('No se pudo copiar. Seleccioná y copiá el texto manualmente.', true); }
+    document.body.removeChild(area);
+  }
+
   function init() {
     Promise.all([fetchJson(new URL('config.json', dataDir).href), fetchJson(new URL('publications.json', dataDir).href)])
       .then(function (results) {
@@ -178,6 +245,7 @@
         paintStats();
         paintChips();
         paintGrid();
+        paintSubmissionCategories();
       })
       .catch(function (err) {
         console.error(err);
@@ -193,6 +261,7 @@
       state.query = e.target.value;
       paintGrid();
     });
+    initSubmission();
   }
 
   init();

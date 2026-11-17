@@ -160,6 +160,39 @@ button { cursor: pointer; }
 .cta__btn { position: relative; z-index: 2; display: inline-flex; align-items: center; gap: 10px; background: var(--sun); color: #3d2a0c; padding: 14px 22px; border-radius: 12px; font-weight: 800; }
 .cta__btn:hover { background: #f7bc60; }
 
+/* ---------- Formulario de solicitudes ---------- */
+.submit-section { padding-top: 0; }
+.submit-grid { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(260px, .8fr); gap: 22px; align-items: start; }
+.panel-form { background: var(--paper); border: 1px solid var(--line); border-radius: var(--radius); padding: 26px; box-shadow: var(--shadow); }
+.panel-form .field-grid { gap: 16px; }
+.submit-actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 20px; }
+.form-status { min-height: 18px; margin: 12px 0 0; font-size: 13px; color: var(--green); font-weight: 600; }
+.form-status.err { color: var(--terracotta-dark); }
+.submit-aside { background: linear-gradient(150deg, #124634, #1d6d4b); color: #fff; border-radius: var(--radius); padding: 28px; }
+.submit-aside__icon { width: 46px; height: 46px; border-radius: 13px; background: rgba(255,255,255,.14); display: grid; place-items: center; margin-bottom: 14px; color: var(--sun); }
+.submit-aside h3 { font-family: var(--font-display); font-size: 21px; margin: 0 0 12px; }
+.submit-aside ol { margin: 0; padding-left: 18px; color: rgba(255,255,255,.84); font-size: 14px; line-height: 1.7; }
+.submit-aside__note { margin: 18px 0 0; font-size: 12px; color: rgba(255,255,255,.65); }
+
+/* ---------- PIN de acceso al panel ---------- */
+#pin-gate { position: fixed; inset: 0; z-index: 200; background: linear-gradient(160deg, #0e3528, #17553c); display: flex; align-items: center; justify-content: center; padding: 24px; }
+.admin:not(.locked) #pin-gate { display: none; }
+.admin.locked .admin__layout { display: none; }
+.pin-card { width: min(430px, 100%); background: var(--paper); border-radius: 20px; padding: 32px; box-shadow: 0 30px 70px rgba(0,0,0,.32); }
+.pin-card .brand { color: var(--ink); margin-bottom: 20px; }
+.pin-card .brand span { color: var(--terracotta); }
+.pin-card h1 { font-family: var(--font-display); font-size: 24px; margin: 0 0 8px; }
+.pin-card p { color: var(--ink-soft); font-size: 14px; line-height: 1.55; margin: 0 0 18px; }
+.pin-card input { width: 100%; border: 1px solid #dbe3db; border-radius: 10px; padding: 13px 14px; font-size: 19px; letter-spacing: 7px; text-align: center; outline: 0; }
+.pin-card input:focus { border-color: var(--green-2); box-shadow: 0 0 0 3px rgba(28,107,75,.12); }
+.pin-error { min-height: 18px; color: #b93d28; font-size: 12px; margin-top: 10px; text-align: center; font-weight: 700; }
+.pin-help { margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--line); font-size: 11px; color: #87968d; line-height: 1.5; }
+
+/* ---------- Solicitudes pendientes ---------- */
+.pending-badge { background: #fff4d6; color: #8a5a0a; padding: 4px 8px; border-radius: 6px; font-size: 10px; font-weight: 800; white-space: nowrap; }
+.nav-badge { margin-left: auto; background: var(--sun); color: #3d2a0c; border-radius: 999px; padding: 1px 7px; font-size: 10px; font-weight: 800; }
+.side-lock { margin-top: 10px; width: 100%; justify-content: center; }
+
 /* ---------- Footer ---------- */
 .site-footer { background: var(--ink); color: rgba(255,255,255,.7); padding: 40px 0 26px; font-size: 13px; }
 .site-footer .wrap { display: flex; justify-content: space-between; align-items: center; gap: 20px; flex-wrap: wrap; }
@@ -272,6 +305,7 @@ button { cursor: pointer; }
   .stats__grid { grid-template-columns: 1fr; margin-top: -40px; }
   .grid { grid-template-columns: 1fr; }
   .field-grid { grid-template-columns: 1fr; }
+  .submit-grid { grid-template-columns: 1fr; }
   .admin__layout { display: block; }
   .admin__side { position: static; height: auto; }
   .side-nav { grid-template-columns: repeat(3, 1fr); }

@@ -8,7 +8,19 @@
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23124634'/%3E%3Cpath d='M10 44 26 20l10 14 7-9 11 19z' fill='%23f0ac45'/%3E%3C/svg%3E">
   <link rel="stylesheet" href="../assets/styles.css">
 </head>
-<body class="admin">
+<body class="admin locked">
+  <div id="pin-gate">
+    <div class="pin-card">
+      <div class="brand"><span class="brand__mark"><svg viewBox="0 0 64 64" aria-hidden="true"><path d="M8 46 26 16l11 17 7-10 12 23z" fill="#f0ac45"/></svg></span>Open<span>Market</span></div>
+      <h1>Acceso al panel</h1>
+      <p>Ingresá el PIN para ver el panel de edición. Para publicar cambios igual necesitás conectar tu token de GitHub.</p>
+      <input id="pin-input" type="password" inputmode="numeric" maxlength="8" placeholder="••••" autocomplete="off" aria-label="PIN del panel">
+      <button class="btn btn--primary" id="pin-enter">Ingresar</button>
+      <div class="pin-error" id="pin-error"></div>
+      <div class="pin-help">Si olvidaste el PIN, editá el campo <b>adminPin</b> en <code>data/config.json</code> del repositorio. Este PIN es solo una barrera visual: la seguridad real es el token de GitHub.</div>
+    </div>
+  </div>
+
   <div class="admin__layout">
     <aside class="admin__side">
       <div class="brand"><span class="brand__mark"><svg viewBox="0 0 64 64" aria-hidden="true"><path d="M8 46 26 16l11 17 7-10 12 23z" fill="#f0ac45"/></svg></span>Open<span>Market</span></div>
@@ -16,6 +28,7 @@
       <div class="side-label">Panel</div>
       <nav class="side-nav" id="side-nav">
         <button class="is-active" data-tab="pubs"><span>▦</span><span>Publicaciones</span></button>
+        <button data-tab="pending"><span>⇩</span><span>Solicitudes</span><span class="nav-badge" id="pending-count" style="display:none">0</span></button>
         <button data-tab="config"><span>⚙</span><span>Configuración</span></button>
         <button data-tab="help"><span>?</span><span>Ayuda</span></button>
       </nav>
@@ -34,6 +47,7 @@
         El token se guarda solo en este navegador. <b>Nunca se sube al repositorio.</b><br>
         <a href="https://github.com/settings/tokens/new?scopes=repo&description=Open%20Market%20Admin" target="_blank" rel="noopener">Crear token en GitHub →</a>
       </div>
+      <button class="btn btn--ghost btn--sm side-lock" id="lock-admin">🔒 Bloquear panel</button>
     </aside>
 
     <main class="admin__main">
@@ -63,6 +77,22 @@
         </div>
       </section>
 
+      <!-- SOLICITUDES -->
+      <section id="tab-pending" style="display:none">
+        <div class="panel">
+          <h2>Solicitudes recibidas</h2>
+          <p>Pegá acá el mensaje que te llegó por WhatsApp y convertilo en una publicación pendiente de aprobación.</p>
+          <div class="field">
+            <label>Mensaje de WhatsApp</label>
+            <textarea id="submission-text" style="min-height:120px" placeholder="SOLICITUD OPEN MARKET · ID: SOL-20261117-AB12&#10;Negocio: ..."></textarea>
+          </div>
+          <div class="admin__actions" style="margin-top:12px">
+            <button class="btn btn--primary" id="parse-submission">Convertir en solicitud</button>
+          </div>
+          <div class="edit-list" id="pending-list" style="margin-top:20px"></div>
+        </div>
+      </section>
+
       <!-- CONFIGURACIÓN -->
       <section id="tab-config" style="display:none">
         <div class="panel">
@@ -70,6 +100,7 @@
           <p>Estos datos aparecen en el inicio, el pie de página y el botón flotante de WhatsApp.</p>
           <div class="field-grid" id="config-fields">
             <div class="field"><label>Nombre del sitio</label><input data-config="siteName"></div>
+            <div class="field"><label>PIN de acceso al panel</label><input data-config="adminPin" inputmode="numeric" maxlength="8" placeholder="1978"><small>Barrera visual; no reemplaza al token de GitHub.</small></div>
             <div class="field"><label>Región / subtitle</label><input data-config="region"></div>
             <div class="field field--full"><label>Título principal</label><input data-config="heroTitle"><small>La palabra "Valle de Punilla" se muestra destacada en color.</small></div>
             <div class="field field--full"><label>Texto de bienvenida</label><textarea data-config="heroText"></textarea></div>
@@ -89,12 +120,20 @@
           <h2>Cómo usar Open Market</h2>
           <p>Pasos para publicar y editar sin Know-how técnico.</p>
           <ol>
+            <li>Ingresá el <b>PIN</b> del panel (por defecto <code>1978</code>). Se cambia en <b>Configuración</b>.</li>
             <li>Creá un token de GitHub con permiso <code>repo</code> (marcado arriba a la izquierda) y pegalo en "Conectar".</li>
             <li>En <b>Publicaciones</b>, tocá una existente o presioná <b>+ Nueva publicación</b>.</li>
             <li>Cargá título, rubro, localidad, descripción y <b>teléfono con código de área</b>. Ese número es el que se ve debajo de la foto.</li>
             <li>En <b>Foto</b>, elegí una imagen de tu computadora (se reduce automáticamente) o pegá una URL. Al tocar la foto en la web se abre WhatsApp con ese número.</li>
             <li>Activá <b>Destacado</b> si querés que aparezca primero.</li>
             <li>Presioná <b>Guardar en GitHub</b>. En pocos segundos los cambios se ven en la web pública.</li>
+          </ol>
+          <h2 style="margin-top:26px">Solicitudes de negocios</h2>
+          <ol>
+            <li>El formulario de la web pública envía un mensaje con ID y datos al WhatsApp del organizador.</li>
+            <li>Copiá ese mensaje y pegalo en <b>Solicitudes</b>, tocá <b>Convertir en solicitud</b>.</li>
+            <li>Revisá los datos, corregí lo que haga falta y tocá <b>Aprobar</b>: la publicación pasa a la lista principal.</li>
+            <li>Recordá tocar <b>Guardar en GitHub</b> para que se vea en la web.</li>
           </ol>
           <div class="alert alert--info">
             <b>Sin token también podés trabajar:</b> los cambios se guardan como borrador en este navegador y podés bajar el archivo con "Descargar JSON". Para publicar, necesitás conectar el token.

@@ -9,7 +9,9 @@
   var PATH_CONFIG = 'data/config.json';
   var DRAFT_PUBS = 'om_draft_pubs';
   var DRAFT_CONFIG = 'om_draft_config';
+  var PENDING_KEY = 'om_pending';
   var TOKEN_KEY = 'om_github_token';
+  var PIN_KEY = 'om_admin_unlocked';
 
   var $ = function (s) { return document.querySelector(s); };
   var scriptDir = new URL('.', document.currentScript.src);
@@ -18,6 +20,7 @@
 
   var defaults = {
     siteName: 'Open Market',
+    adminPin: '1978',
     region: 'Valle de Punilla · Córdoba',
     heroTitle: 'Descubrí lo mejor del Valle de Punilla',
     heroText: 'Gastronomía, alojamientos, experiencias y negocios de tu zona. Elegí una publicación y hablá directamente por WhatsApp.',
@@ -32,6 +35,7 @@
     token: localStorage.getItem(TOKEN_KEY) || '',
     user: null,
     pubs: [],
+    pending: [],
     config: {},
     openId: null,
     tab: 'pubs'
@@ -90,14 +94,16 @@
 
   function setDraftStatus() {
     var hasDraft = localStorage.getItem(DRAFT_PUBS) || localStorage.getItem(DRAFT_CONFIG);
-    $('#draft-status').textContent = hasDraft
+    var pendingText = state.pending.length ? ' · ' + state.pending.length + ' solicitudes pendientes' : '';
+    $('#draft-status').textContent = (hasDraft
       ? 'Tenés cambios sin publicar en este navegador.'
-      : (state.pubs.length + ' publicaciones · ' + (state.user ? 'Conectado a GitHub' : 'Modo edición local'));
+      : (state.pubs.length + ' publicaciones · ' + (state.user ? 'Conectado a GitHub' : 'Modo edición local'))) + pendingText;
   }
 
   function markDirty() {
     localStorage.setItem(DRAFT_PUBS, JSON.stringify(state.pubs));
     localStorage.setItem(DRAFT_CONFIG, JSON.stringify(state.config));
+    localStorage.setItem(PENDING_KEY, JSON.stringify(state.pending));
     setDraftStatus();
   }
 
@@ -105,6 +111,156 @@
     if (which !== 'config') localStorage.removeItem(DRAFT_PUBS);
     if (which !== 'pubs') localStorage.removeItem(DRAFT_CONFIG);
     setDraftStatus();
+  }
+
+  /* ---------- PIN de acceso (barrera visual) ---------- */
+  function isUnlocked() { return sessionStorage.getItem(PIN_KEY) === '1'; }
+
+  function applyLock() {
+    document.body.classList.toggle('locked', !isUnlocked());
+    if (!isUnlocked()) {
+      var input = $('#pin-input');
+      if (input) { input.value = ''; input.focus(); }
+      var error = $('#pin-error');
+      if (error) error.textContent = '';
+    }
+  }
+
+  function unlock() {
+    sessionStorage.setItem(PIN_KEY, '1');
+    applyLock();
+  }
+
+  function lock() {
+    sessionStorage.removeItem(PIN_KEY);
+    applyLock();
+    switchTab('pubs');
+    status('Panel bloqueado.');
+  }
+
+  function checkPin() {
+    var expected = String(state.config.adminPin || defaults.adminPin);
+    if ($('#pin-input').value.trim() === expected) {
+      unlock();
+    } else {
+      $('#pin-error').textContent = 'PIN incorrecto. Intentá de nuevo.';
+      $('#pin-input').value = '';
+      $('#pin-input').focus();
+    }
+  }
+
+  /* ---------- Solicitudes ---------- */
+  function normKey(value) {
+    return String(value || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  }
+
+  function matchCategory(value) {
+    var cats = state.config.categories || defaults.categories;
+    var v = normKey(value).trim();
+    for (var i = 0; i < cats.length; i++) if (normKey(cats[i]) === v) return cats[i];
+    for (var j = 0; j < cats.length; j++) {
+      var c = normKey(cats[j]);
+      if (v && (v.indexOf(c) !== -1 || c.indexOf(v) !== -1)) return cats[j];
+    }
+    return cats[cats.length - 1] || 'Comercio y servicios';
+  }
+
+  function parseSubmission(text) {
+    var out = {
+      id: 'pend-' + Date.now(),
+      sourceId: '',
+      title: '',
+      category: (state.config.categories || defaults.categories)[0],
+      location: '',
+      phone: '',
+      description: '',
+      image: '',
+      tags: []
+    };
+    String(text || '').split(/\r?\n/).forEach(function (line) {
+      var i = line.indexOf(':');
+      if (i < 0) return;
+      var key = normKey(line.slice(0, i)).trim();
+      var value = line.slice(i + 1).trim();
+      if (/(^|\s)id$/.test(key)) out.sourceId = value;
+      else if (key.indexOf('negocio') !== -1) out.title = value;
+      else if (key.indexOf('rubro') !== -1) out.category = matchCategory(value);
+      else if (key.indexOf('localidad') !== -1) out.location = value;
+      else if (key.indexOf('telefono') !== -1 || key.indexOf('whatsapp') !== -1) out.phone = value;
+      else if (key.indexOf('descripcion') !== -1) out.description = value;
+      else if (key.indexOf('foto') !== -1) out.image = value;
+    });
+    return out;
+  }
+
+  function pendingHtml(p) {
+    return '' +
+      '<div class="edit-item" data-pending-id="' + esc(p.id) + '">' +
+        '<div class="edit-item__head">' +
+          '<div class="edit-item__title"><b>' + esc(p.title || 'Sin título') + '</b><small>' +
+            (p.sourceId ? '<span class="pending-badge">' + esc(p.sourceId) + '</span> ' : '') +
+            esc(p.category || '') + (p.location ? ' · ' + esc(p.location) : '') +
+          '</small></div>' +
+          '<div class="edit-item__tools">' +
+            '<button class="btn btn--primary btn--sm" data-pact="approve">Aprobar</button>' +
+            '<button class="icon-btn danger" data-pact="drop" title="Descartar">✕</button>' +
+          '</div>' +
+        '</div>' +
+        '<div class="edit-item__body">' +
+          '<div class="field-grid">' +
+            '<div class="field"><label>Nombre del negocio</label><input data-pending-field="title" value="' + esc(p.title) + '"></div>' +
+            '<div class="field"><label>Rubro</label><select data-pending-field="category">' + categoryOptions(p.category) + '</select></div>' +
+            '<div class="field"><label>Localidad</label><input data-pending-field="location" value="' + esc(p.location) + '"></div>' +
+            '<div class="field"><label>Teléfono / WhatsApp</label><input data-pending-field="phone" value="' + esc(p.phone) + '"></div>' +
+            '<div class="field field--full"><label>Descripción</label><textarea data-pending-field="description">' + esc(p.description) + '</textarea></div>' +
+            '<div class="field field--full"><label>URL de foto</label><input data-pending-field="image" value="' + esc(p.image) + '"></div>' +
+          '</div>' +
+        '</div>' +
+      '</div>';
+  }
+
+  function renderPending() {
+    var box = $('#pending-list');
+    if (!box) return;
+    box.innerHTML = state.pending.map(pendingHtml).join('') ||
+      '<div class="empty"><h3>No hay solicitudes pendientes</h3><p>El formulario de la web pública genera mensajes para revisar acá.</p></div>';
+    var badge = $('#pending-count');
+    if (badge) {
+      badge.style.display = state.pending.length ? '' : 'none';
+      badge.textContent = state.pending.length;
+    }
+  }
+
+  function findPending(id) {
+    for (var i = 0; i < state.pending.length; i++) if (state.pending[i].id === id) return state.pending[i];
+    return null;
+  }
+
+  function approvePending(id) {
+    var idx = state.pending.findIndex(function (p) { return p.id === id; });
+    if (idx < 0) return;
+    var p = state.pending[idx];
+    if (!p.title || !p.phone) {
+      alert('La solicitud necesita al menos <b>nombre</b> y <b>teléfono</b> antes de aprobarla.', 'err');
+      return;
+    }
+    state.pubs.push({
+      id: 'pub-' + Date.now(),
+      title: p.title,
+      category: p.category || (state.config.categories || defaults.categories)[0],
+      location: p.location || '',
+      description: p.description || '',
+      phone: p.phone,
+      image: p.image || (siteBase + 'assets/placeholders/comercio.svg'),
+      featured: false,
+      tags: p.tags || []
+    });
+    state.pending.splice(idx, 1);
+    renderPending();
+    renderList();
+    markDirty();
+    alert('<b>Solicitud aprobada.</b> Ya está en Publicaciones. Tocá <b>Guardar en GitHub</b> para que se vea en la web.', 'ok');
+    status('Solicitud aprobada. Falta guardar en GitHub.');
   }
 
   /* ---------- GitHub API ---------- */
@@ -290,7 +446,7 @@
 
   function switchTab(tab) {
     state.tab = tab;
-    ['pubs', 'config', 'help'].forEach(function (t) {
+    ['pubs', 'pending', 'config', 'help'].forEach(function (t) {
       $('#tab-' + t).style.display = t === tab ? '' : 'none';
     });
     Array.prototype.forEach.call(document.querySelectorAll('#side-nav button'), function (b) {
@@ -315,11 +471,15 @@
 
         var draftPubs = localStorage.getItem(DRAFT_PUBS);
         var draftConfig = localStorage.getItem(DRAFT_CONFIG);
+        var savedPending = localStorage.getItem(PENDING_KEY);
         if (draftPubs) { try { state.pubs = JSON.parse(draftPubs); } catch (e) {} }
         if (draftConfig) { try { state.config = Object.assign({}, defaults, JSON.parse(draftConfig)); } catch (e) {} }
+        if (savedPending) { try { state.pending = JSON.parse(savedPending); } catch (e) {} }
 
         renderList();
+        renderPending();
         renderConfig();
+        applyLock();
         setDraftStatus();
         if (draftPubs || draftConfig) {
           alert('Recuperamos un <b>borrador local</b> de este navegador. Revisalo y guardalo en GitHub cuando quieras.');
@@ -364,8 +524,60 @@
     load();
     refreshUser();
 
+    applyLock();
+    $('#pin-enter').addEventListener('click', checkPin);
+    $('#pin-input').addEventListener('keydown', function (e) { if (e.key === 'Enter') checkPin(); });
+    $('#lock-admin').addEventListener('click', lock);
+
     Array.prototype.forEach.call(document.querySelectorAll('#side-nav button'), function (b) {
       b.addEventListener('click', function () { switchTab(b.getAttribute('data-tab')); });
+    });
+
+    $('#parse-submission').addEventListener('click', function () {
+      var text = $('#submission-text').value;
+      if (!text.trim()) { alert('Pegá primero el mensaje recibido por WhatsApp.', 'err'); return; }
+      var item = parseSubmission(text);
+      if (!item.title && !item.phone) { alert('No se pudo leer el mensaje. Revisá que diga "Negocio:" y "Teléfono:".', 'err'); return; }
+      state.pending.push(item);
+      $('#submission-text').value = '';
+      renderPending();
+      markDirty();
+      switchTab('pending');
+      alert('<b>Solicitud cargada.</b> Revisá los datos y tocá <b>Aprobar</b> cuando esté todo bien.', 'ok');
+    });
+
+    var pendingBox = $('#pending-list');
+    pendingBox.addEventListener('input', function (e) {
+      var el = e.target;
+      var key = el.getAttribute('data-pending-field');
+      if (!key) return;
+      var p = findPending(el.closest('[data-pending-id]').getAttribute('data-pending-id'));
+      if (!p) return;
+      p[key] = el.value;
+      if (key === 'title') {
+        var label = el.closest('.edit-item').querySelector('.edit-item__title b');
+        if (label) label.textContent = p.title || 'Sin título';
+      }
+      markDirty();
+    });
+    pendingBox.addEventListener('change', function (e) {
+      if (e.target.matches('[data-pending-field="category"]')) {
+        var p = findPending(e.target.closest('[data-pending-id]').getAttribute('data-pending-id'));
+        if (p) { p.category = e.target.value; markDirty(); }
+      }
+    });
+    pendingBox.addEventListener('click', function (e) {
+      var btn = e.target.closest('button[data-pact]');
+      if (!btn) return;
+      var item = e.target.closest('[data-pending-id]');
+      if (!item) return;
+      var id = item.getAttribute('data-pending-id');
+      if (btn.getAttribute('data-pact') === 'approve') { approvePending(id); return; }
+      if (confirm('¿Descartar esta solicitud?')) {
+        state.pending = state.pending.filter(function (p) { return p.id !== id; });
+        renderPending();
+        markDirty();
+      }
     });
 
     $('#token-connect').addEventListener('click', function () {

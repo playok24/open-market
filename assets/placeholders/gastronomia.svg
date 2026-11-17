@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" width="800" height="500">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#f7c978"/><stop offset="1" stop-color="#e8845b"/></linearGradient>
+    <linearGradient id="hill" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#8f5a48"/><stop offset="1" stop-color="#5c3a32"/></linearGradient>
+  </defs>
+  <rect width="800" height="500" fill="url(#sky)"/>
+  <circle cx="640" cy="115" r="56" fill="#fff1c9" opacity=".9"/>
+  <path d="M0 330 170 190l110 96 130-130 170 150 110-78 110 92v180H0z" fill="#a86852" opacity=".75"/>
+  <path d="M0 380 150 280l120 72 150-110 180 120 120-70 80 60v148H0z" fill="url(#hill)"/>
+  <g transform="translate(400 268)" fill="none" stroke="#fff5e6" stroke-width="9" stroke-linecap="round" opacity=".95">
+    <path d="M-70-30v-45M-45-30v-45M-20-30v-45M-70-30a45 45 0 0 0 90 0"/>
+    <path d="M60-75v150M35-75v45a25 25 0 0 0 50 0v-45"/>
+  </g>
+  <rect x="0" y="430" width="800" height="70" fill="#2f221e" opacity=".55"/>
+  <text x="40" y="470" font-family="Segoe UI, Arial, sans-serif" font-size="21" font-weight="700" fill="#fff5e6" letter-spacing="1">GASTRONOMÍA · foto de ejemplo</text>
+</svg>

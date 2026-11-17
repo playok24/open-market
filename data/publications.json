@@ -1,0 +1,92 @@
+{
+  "publications": [
+    {
+      "id": "demo-1",
+      "title": "El Fogón de la Quebrada",
+      "category": "Gastronomía",
+      "location": "La Falda",
+      "description": "Parrilla familiar con carnes a leña, empanadas caseras y vista a las sierras. Ideal para almorzar después de caminar por el Valle.",
+      "phone": "3548345678",
+      "image": "assets/placeholders/gastronomia.svg",
+      "featured": true,
+      "tags": ["Parrilla", "Casero", "Vista sierras"]
+    },
+    {
+      "id": "demo-2",
+      "title": "Cabañas Los Cedros",
+      "category": "Alojamientos",
+      "location": "Valle Hermoso",
+      "description": "Cabañas equipadas con cocina, WiFi y pileta. A 5 minutos del centro, rodeadas de cedros y con desayuno opcional.",
+      "phone": "3547123456",
+      "image": "assets/placeholders/alojamientos.svg",
+      "featured": true,
+      "tags": ["Cabañas", "WiFi", "Pileta"]
+    },
+    {
+      "id": "demo-3",
+      "title": "Senderos del Cerro",
+      "category": "Actividades y turismo",
+      "location": "Capilla del Monte",
+      "description": "Caminatas guiadas al amanecer, trekking de media jornada y observación de aves con guía local certificado.",
+      "phone": "3548911223",
+      "image": "assets/placeholders/actividades.svg",
+      "featured": false,
+      "tags": ["Trekking", "Guía", "Naturaleza"]
+    },
+    {
+      "id": "demo-4",
+      "title": "Heladería La Siesta",
+      "category": "Gastronomía",
+      "location": "Villa Carlos Paz",
+      "description": "Helados artesanales con frutas de estación, sabores regionales y opciones sin azúcar. Abierta todos los días.",
+      "phone": "3542123456",
+      "image": "assets/placeholders/gastronomia.svg",
+      "featured": false,
+      "tags": ["Helados", "Artesanal", "Sin azúcar"]
+    },
+    {
+      "id": "demo-5",
+      "title": "Taller de Cerámica El Barro",
+      "category": "Actividades y turismo",
+      "location": "Cosquín",
+      "description": "Clases para grandes y chicos: modelado a mano, torno y pintura. Te llevás tu pieza terminada. Turnos por WhatsApp.",
+      "phone": "3546456789",
+      "image": "assets/placeholders/actividades.svg",
+      "featured": false,
+      "tags": ["Taller", "Familiar", "Artesanía"]
+    },
+    {
+      "id": "demo-6",
+      "title": "Bicicletas Punilla Bike",
+      "category": "Comercio y servicios",
+      "location": "Santa María de Punilla",
+      "description": "Alquiler de bicicletas, mountain bike y Rodado 29. Incluye casco, candado y mapa de circuitos por el valle.",
+      "phone": "3549554433",
+      "image": "assets/placeholders/comercio.svg",
+      "featured": false,
+      "tags": ["Alquiler", "Bicicletas", "Circuitos"]
+    },
+    {
+      "id": "demo-7",
+      "title": "Hostería Mirador del Valle",
+      "category": "Alojamientos",
+      "location": "Juan B. Justo",
+      "description": "Habitaciones con vista panorámica, desayuno incluido y terraza para ver el atardecer. A 10 min de La Falda.",
+      "phone": "3548377855",
+      "image": "assets/placeholders/alojamientos.svg",
+      "featured": false,
+      "tags": ["Hostería", "Desayuno", "Vista panorámica"]
+    },
+    {
+      "id": "demo-8",
+      "title": "Mercado de Productores",
+      "category": "Comercio y servicios",
+      "location": "Los Cocos",
+      "description": "Productos regionales: miel, dulces, quesos, hierbas y artesanías. Retiro en el local o envíos a todo el valle.",
+      "phone": "3542112233",
+      "image": "assets/placeholders/comercio.svg",
+      "featured": false,
+      "tags": ["Regional", "Artesanías", "Envíos"]
+    }
+  ]
+}

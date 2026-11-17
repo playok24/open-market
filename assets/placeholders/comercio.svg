@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" width="800" height="500">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#a8d5c4"/><stop offset="1" stop-color="#f4e3bd"/></linearGradient>
+    <linearGradient id="mount" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#5d8a6e"/><stop offset="1" stop-color="#335840"/></linearGradient>
+  </defs>
+  <rect width="800" height="500" fill="url(#sky)"/>
+  <circle cx="130" cy="95" r="46" fill="#fff8dc" opacity=".85"/>
+  <path d="M0 340 170 195l120 105 140-140 170 155 110-80 90 85v180H0z" fill="#7ba687" opacity=".7"/>
+  <path d="M0 390 150 290l150 80 170-120 180 130 150-70v190H0z" fill="url(#mount)"/>
+  <g transform="translate(400 320)">
+    <rect x="-110" y="-30" width="220" height="110" rx="8" fill="#f7f1e4" stroke="#31533f" stroke-width="6"/>
+    <path d="M-125-30 0-105l125 75z" fill="#c65e3c"/>
+    <rect x="-90" y="0" width="55" height="45" fill="#bfe0e6" stroke="#31533f" stroke-width="5"/>
+    <rect x="35" y="0" width="55" height="80" fill="#8a674d" stroke="#31533f" stroke-width="5"/>
+    <rect x="-20" y="5" width="35" height="75" fill="#e6c98f" stroke="#31533f" stroke-width="5"/>
+  </g>
+  <rect x="0" y="430" width="800" height="70" fill="#1f3f31" opacity=".6"/>
+  <text x="40" y="470" font-family="Segoe UI, Arial, sans-serif" font-size="21" font-weight="700" fill="#f5fbf3" letter-spacing="1">COMERCIO Y SERVICIOS · foto de ejemplo</text>
+</svg>
